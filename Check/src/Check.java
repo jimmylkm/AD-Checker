@@ -5,18 +5,25 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
 
 public class Check {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		String folderPath = "";
-		String fileExt = ".out";
+		String folderPath = "/Users/Jimmy/Desktop/AD for checking/";
+		String adFileExt = ".out";
+		String entryFileExt = ".csv";
 		String fullPathAD;
-		String fullPathExcel = folderPath + "Excel Test.csv";
-		String fullPathADList = folderPath + "AD ID.csv";
+		//TODO Change this later
+//		String fullPathExcel = folderPath + "Excel Test.csv";
+//		String fullPathADList = folderPath + "AD ID.csv";
+		String fullPathExcel;
+		String fullPathADList;
+		String excelName;
+		String idName;
+		String adFilename;
 		int countSn = 0;
 		int countGivenName = 0;
 		int countPhone = 0;
@@ -26,10 +33,22 @@ public class Check {
 		int countGroup = 0;
 		int countMissing = 0;
 
+//		Ask for filenames
+		Scanner scan = new Scanner(System.in);
+		System.out.print("Enter filename for Excel Entries: ");
+		excelName = scan.nextLine();
+		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
+		System.out.print("Enter filename for AD ID List: ");
+		idName = scan.nextLine();
+		fullPathADList = folderPath + idName.trim() + entryFileExt;
+		System.out.print("Enter child filename containing AD files: ");
+		adFilename = scan.nextLine().trim() + "/";
+		scan.close();
+		
 		
 		try { 
-			PrintStream out = new PrintStream(new FileOutputStream("Check Result.txt"));
-			System.setOut(out);
+//			PrintStream out = new PrintStream(new FileOutputStream("Check Result.txt"));
+//			System.setOut(out);
 			
 			System.out.println("******Starting AD Entry Check******\n");
 			//			Read AD ID List
@@ -42,6 +61,57 @@ public class Check {
 			//			Read Excel File
 			List <String> excelListLines= Files.readAllLines(Paths.get(fullPathExcel),
 					Charset.defaultCharset());
+			for (String excelList: excelListLines){
+				excelList.trim();
+			}
+			
+//			Parse the position for item to be compared
+			int position = 0;
+			int surname = -1;
+			int givenName = -1;
+			int company = -1;
+			int port = -1;
+			int countryCode = -1;
+			int areaCode = -1;
+			int phone = -1;
+			int email = -1;
+			int group = -1;
+			String[] adAttribute = excelListLines.get(0).split(",");
+			System.out.println("Enter attribute name to be checked, ");
+			for(String attribute: adAttribute){
+				switch(attribute){
+				case("Surname"):
+					surname = position;
+					break;
+				case("First Name"):
+					givenName = position;
+					break;
+				case("Working Company"):
+					company = position;
+					break;
+				case("Port"):
+					port = position;
+					break;
+				case("Country Code"):
+					countryCode = position;
+					break;
+				case("Area Code"):
+					areaCode = position;
+					break;
+				case("Phone Num"):
+					phone = position;
+					break;
+				case("Email"):
+					email = position;
+					break;
+				case("User Group (11. Group Profile)"):
+					group = position;
+					break;
+				default:
+				}
+				position++;
+			}
+			
 			excelListLines.remove(0);
 
 			while(!excelListLines.isEmpty()){
@@ -57,7 +127,7 @@ public class Check {
 					temp = excelListLines.get(0).split(",");
 					//				System.out.println(excelListLines.get(0));
 //					System.out.println(excelListLines.get(0));
-					entry = new ADEntry(temp[1].trim(),temp[2].trim(),temp[3].trim(),
+					entry = new ADEntry(temp[surname],temp[2].trim(),temp[3].trim(),
 							temp[5].trim(),temp[11].trim(),"+("+temp[12].trim()+")"+temp[13].trim()+temp[14].trim());
 //					System.out.println(temp[15]);
 					entry.addGroup(temp[15].split("\"",2)[1]);
@@ -74,7 +144,7 @@ public class Check {
 					}
 					//				entry.print();
 					String ID = adList.split(",",2)[0];
-					fullPathAD = folderPath + "AD/" + ID + fileExt;
+					fullPathAD = folderPath + adFilename + ID + adFileExt;
 					try{
 						List<String> adLines = Files.readAllLines(Paths.get(fullPathAD),
 								Charset.defaultCharset());

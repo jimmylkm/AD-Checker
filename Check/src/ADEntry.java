@@ -40,11 +40,11 @@ public class ADEntry {
 		}
 	}
 
-//	public void printGroup(){
-//		if(group != null){
-//			for(String line: group){
-//				System.out.println(line);
-//			}
-//		}
-//	}
+	public void printGroup(){
+		if(group != null){
+			for(String line: group){
+				System.out.println(line);
+			}
+		}
+	}
 }
