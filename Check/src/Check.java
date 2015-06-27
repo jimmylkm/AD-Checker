@@ -38,9 +38,9 @@ public class Check {
 		System.out.print("Enter filename for Excel Entries: ");
 		excelName = scan.nextLine();
 		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
-		System.out.print("Enter filename for AD ID List: ");
-		idName = scan.nextLine();
-		fullPathADList = folderPath + idName.trim() + entryFileExt;
+//		System.out.print("Enter filename for AD ID List: ");
+//		idName = scan.nextLine();
+//		fullPathADList = folderPath + idName.trim() + entryFileExt;
 		System.out.print("Enter child filename containing AD files: ");
 		adFilename = scan.nextLine().trim() + "/";
 		scan.close();
@@ -52,19 +52,18 @@ public class Check {
 			
 			System.out.println("******Starting AD Entry Check******\n");
 			//			Read AD ID List
-			List<String> adListLines= Files.readAllLines(Paths.get(fullPathADList),
-					Charset.defaultCharset());
-			adListLines.remove(0);
+//			List<String> adListLines= Files.readAllLines(Paths.get(fullPathADList),
+//					Charset.defaultCharset());
+//			adListLines.remove(0);
 			//						for (String lineADList: adListLines){
 			//							System.out.println(lineADList.split(",",2)[0]);
 			//						}
 			//			Read Excel File
 			List <String> excelListLines= Files.readAllLines(Paths.get(fullPathExcel),
 					Charset.defaultCharset());
-			for (String excelList: excelListLines){
-				excelList.trim();
+			for(String line: excelListLines){
+				System.out.println(line);
 			}
-			
 //			Parse the position for item to be compared
 			int position = 0;
 			int surname = -1;
@@ -76,9 +75,13 @@ public class Check {
 			int phone = -1;
 			int email = -1;
 			int group = -1;
-			String[] adAttribute = excelListLines.get(0).split(",");
-			System.out.println("Enter attribute name to be checked, ");
+			int galaxyID = -1;
+			
+			String[] adAttribute = excelListLines.get(0).split("|");
 			for(String attribute: adAttribute){
+//				System.out.println(attribute);
+				attribute = attribute.trim();
+				System.out.println(attribute);
 				switch(attribute){
 				case("Surname"):
 					surname = position;
@@ -107,11 +110,28 @@ public class Check {
 				case("User Group (11. Group Profile)"):
 					group = position;
 					break;
+				case("GalaCXy ID"):
+					galaxyID = position;
+					break;
 				default:
 				}
 				position++;
 			}
-			
+			if(surname == -1 || givenName == -1 || company == -1 || port == -1 ||
+					countryCode == -1 || areaCode == -1 || phone == -1 || email == -1 || group == -1 || galaxyID == -1){
+				System.out.println("One of the required attribute not found in excel file!");
+				System.out.println(surname);
+				System.out.println(givenName);
+				System.out.println(company);
+				System.out.println(port);
+				System.out.println(countryCode);
+				System.out.println(areaCode);
+				System.out.println(phone);
+				System.out.println(email);
+				System.out.println(group);
+				System.out.println(galaxyID);
+				System.exit(-1);
+			}
 			excelListLines.remove(0);
 
 			while(!excelListLines.isEmpty()){
@@ -119,18 +139,18 @@ public class Check {
 				ADEntry entry;
 				String[] temp;
 				//			Read AD File
-				for(String adList: adListLines){
-					while(excelListLines.get(0).equals("\"")||excelListLines.get(0).equals("")){
+//				for(String adList: adListLines){
+					while(Pattern.matches("\".*",excelListLines.get(0).trim())||excelListLines.get(0).equals("")){
 						excelListLines.remove(0);
 						//					System.out.println("Removed \"");
 					}
-					temp = excelListLines.get(0).split(",");
+					temp = excelListLines.get(0).split("|");
 					//				System.out.println(excelListLines.get(0));
-//					System.out.println(excelListLines.get(0));
-					entry = new ADEntry(temp[surname],temp[2].trim(),temp[3].trim(),
-							temp[5].trim(),temp[11].trim(),"+("+temp[12].trim()+")"+temp[13].trim()+temp[14].trim());
-//					System.out.println(temp[15]);
-					entry.addGroup(temp[15].split("\"",2)[1]);
+					System.out.println(excelListLines.get(0));
+					entry = new ADEntry(temp[surname].trim(),temp[givenName].trim(),temp[company].trim(),
+							temp[port].trim(),temp[email].trim(),"+("+temp[countryCode].trim()+")"+temp[areaCode].trim()+temp[phone].trim());
+//					System.out.println(temp[group]);
+					entry.addGroup(temp[group].split("\"",2)[1].trim());
 					excelListLines.remove(0);
 					//				entry.print();
 					//				System.out.println(excelListLines.get(0));
@@ -143,13 +163,14 @@ public class Check {
 							break;
 					}
 					//				entry.print();
-					String ID = adList.split(",",2)[0];
+					String ID = temp[galaxyID];
 					fullPathAD = folderPath + adFilename + ID + adFileExt;
 					try{
 						List<String> adLines = Files.readAllLines(Paths.get(fullPathAD),
 								Charset.defaultCharset());
 
 						for (String lineAD : adLines) {
+							lineAD = lineAD.trim();
 							//					System.out.println(adLines);
 							if (Pattern.matches("(sn:).*",lineAD)){
 								//						System.out.println(lineAD.substring(4));
@@ -249,7 +270,7 @@ public class Check {
 						System.out.println(ID + ": AD file not found");
 						countMissing++;
 					}
-				}
+//				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
