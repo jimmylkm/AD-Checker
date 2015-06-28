@@ -20,7 +20,7 @@ public class Check {
 		String fullPathAD;
 		String fullPathExcel;
 		String excelName;
-		String adFilename;
+		String adFilePath = "";
 		
 		int countSn = 0;
 		int countGivenName = 0;
@@ -33,12 +33,14 @@ public class Check {
 
 		JFrame frame = new JFrame();
 		
-		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries: ",
+		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries",
 				"AD Checker", JOptionPane.QUESTION_MESSAGE);
 		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
 		
-		adFilename = JOptionPane.showInputDialog(frame,"Enter child filename containing AD files: ",
-				"AD Checker", JOptionPane.QUESTION_MESSAGE).trim() + "/";
+		adFilePath = JOptionPane.showInputDialog(frame,"Enter child filename containing AD files (Press Enter if AD files are in the same directory)",
+				"AD Checker", JOptionPane.QUESTION_MESSAGE).trim();
+		if(!adFilePath.equals(""))
+			adFilePath = adFilePath + "/";
 		
 		try { 
 			PrintStream out = new PrintStream(new FileOutputStream("Check Result.txt"));
@@ -145,7 +147,7 @@ public class Check {
 							break;
 					}
 					String ID = temp[galaxyID];
-					fullPathAD = folderPath + adFilename + ID + adFileExt;
+					fullPathAD = folderPath + adFilePath + ID + adFileExt;
 					try{
 						List<String> adLines = Files.readAllLines(Paths.get(fullPathAD),
 								Charset.defaultCharset());
@@ -176,7 +178,7 @@ public class Check {
 							}
 							if (Pattern.matches("(cpatrueportcode:).*",lineAD)){
 								if(!entry.port.equals(lineAD.substring(17))){
-									System.out.println(ID + " (Row " + rowCount +") : port is incorrect");
+									System.out.println(ID + " (Row " + rowCount +") : Port is incorrect");
 									countPort++;
 								}
 								entry.port = null;
@@ -184,7 +186,7 @@ public class Check {
 							}
 							if (Pattern.matches("(mail:).*",lineAD)){
 								if(!entry.email.equalsIgnoreCase(lineAD.substring(6))){
-									System.out.println(ID + " (Row " + rowCount +") : email is incorrect");
+									System.out.println(ID + " (Row " + rowCount +") : Email is incorrect");
 									countEmail++;
 								}
 								entry.email = null;
@@ -192,7 +194,7 @@ public class Check {
 							}
 							if (Pattern.matches("(telephoneNumber:).*",lineAD)){
 								if(!entry.phone.equals(lineAD.substring(17))){
-									System.out.println(ID + " (Row " + rowCount +") :phone is incorrect");
+									System.out.println(ID + " (Row " + rowCount +") : Phone is incorrect");
 									countPhone++;
 								}
 								entry.phone = null;
@@ -220,7 +222,7 @@ public class Check {
 							countCompany++;
 						}
 						if(entry.port != null){
-							System.out.println(ID + " (Row " + rowCount +") : port is missing");
+							System.out.println(ID + " (Row " + rowCount +") : Port is missing");
 							countPort++;
 						}
 						if(entry.email != null){
@@ -237,7 +239,9 @@ public class Check {
 					}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			System.out.println("Excel file not found");
+			System.out.println("\n******Ending AD Entry Check******");
+			System.exit(-1);
 		}
 		System.out.println("\nMissing File: "+countMissing);
 		System.out.println("Error in Surname: "+countSn);
