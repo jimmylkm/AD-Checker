@@ -155,21 +155,21 @@ public class Check {
 						for (String lineAD : adLines) {
 							lineAD = lineAD.trim();
 							if (Pattern.matches("(sn:).*",lineAD)){
-								if(!entry.surname.equals(lineAD.substring(4))){
+								if(!entry.surname.equals(lineAD.substring(4).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : Surname is incorrect");
 									countSn++;
 								}
 								entry.surname = null;
 							}
 							if (Pattern.matches("(givenName:).*",lineAD)){
-								if(!entry.givenName.equals(lineAD.substring(11))){
+								if(!entry.givenName.equals(lineAD.substring(11).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : GivenName is incorrect");
 									countGivenName++;
 								}
 								entry.givenName = null;
 							}
 							if (Pattern.matches("(company:).*",lineAD)){
-								if(!entry.company.equals(lineAD.substring(9))){
+								if(!entry.company.equals(lineAD.substring(9).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : Company is incorrect");
 									countCompany++;
 								}
@@ -177,7 +177,7 @@ public class Check {
 
 							}
 							if (Pattern.matches("(cpatrueportcode:).*",lineAD)){
-								if(!entry.port.equals(lineAD.substring(17))){
+								if(!entry.port.equals(lineAD.substring(17).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : Port is incorrect");
 									countPort++;
 								}
@@ -185,7 +185,7 @@ public class Check {
 
 							}
 							if (Pattern.matches("(mail:).*",lineAD)){
-								if(!entry.email.equalsIgnoreCase(lineAD.substring(6))){
+								if(!entry.email.equalsIgnoreCase(lineAD.substring(6).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : Email is incorrect");
 									countEmail++;
 								}
@@ -193,14 +193,14 @@ public class Check {
 
 							}
 							if (Pattern.matches("(telephoneNumber:).*",lineAD)){
-								if(!entry.phone.equals(lineAD.substring(17))){
+								if(!entry.phone.equals(lineAD.substring(17).trim())){
 									System.out.println(ID + " (Row " + rowCount +") : Phone is incorrect");
 									countPhone++;
 								}
 								entry.phone = null;
 							}
 							if (Pattern.matches("(memberOf: CN=ISD).*",lineAD)){
-								if(entry.group.contains(lineAD.substring(13).split(",",2)[0])){
+								if(entry.group.contains(lineAD.substring(13).split(",",2)[0].trim())){
 									entry.group.remove(lineAD.substring(13).split(",",2)[0]);
 								}
 						}
