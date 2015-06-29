@@ -7,8 +7,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class Check {
@@ -16,10 +18,9 @@ public class Check {
 	public static void main(String[] args) {
 		String folderPath = "";
 		String adFileExt = ".out";
-		String entryFileExt = ".csv";
-		String fullPathAD;
-		String fullPathExcel;
-		String excelName;
+		String fullPathAD = null;
+		String fullPathExcel = null;
+		String excelName = null;
 		String adFilePath = "";
 		
 		int countSn = 0;
@@ -33,14 +34,42 @@ public class Check {
 
 		JFrame frame = new JFrame();
 		
-		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries",
-				"AD Checker", JOptionPane.QUESTION_MESSAGE);
-		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+		        "csv", "csv");
 		
-		adFilePath = JOptionPane.showInputDialog(frame,"Enter child filename containing AD files (Press Enter if AD files are in the same directory)",
-				"AD Checker", JOptionPane.QUESTION_MESSAGE).trim();
-		if(!adFilePath.equals(""))
-			adFilePath = adFilePath + "/";
+		JOptionPane.showMessageDialog(frame, "Select the excel file", "AD Check", JOptionPane.INFORMATION_MESSAGE);
+		
+	    JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
+	    chooser.setFileFilter(filter);
+	    int returnVal = chooser.showOpenDialog(frame);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	    	excelName = chooser.getSelectedFile().getName();
+	    	fullPathExcel = folderPath + excelName;
+	    }
+	    
+
+		JOptionPane.showMessageDialog(frame, "Show the AD file's directory", "AD Check", JOptionPane.INFORMATION_MESSAGE);
+		
+	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    returnVal = chooser.showOpenDialog(frame);
+	    if(returnVal == JFileChooser.APPROVE_OPTION) {
+	    	adFilePath = chooser.getSelectedFile().getName();
+	    	adFilePath = adFilePath + "/";
+	    }
+	    
+	    if(excelName == null || adFilePath == null){
+	    	JOptionPane.showMessageDialog(frame, "Error while choosing file, exiting", "AD Checker", JOptionPane.INFORMATION_MESSAGE);
+	    	System.exit(-1);
+	    }
+		
+//		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries",
+//				"AD Checker", JOptionPane.QUESTION_MESSAGE);
+//		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
+//		
+//		adFilePath = JOptionPane.showInputDialog(frame,"Enter child filename containing AD files (Press Enter if AD files are in the same directory)",
+//				"AD Checker", JOptionPane.QUESTION_MESSAGE).trim();
+//		if(!adFilePath.equals(""))
+//			adFilePath = adFilePath + "/";
 		
 		try { 
 			PrintStream out = new PrintStream(new FileOutputStream("Check Result.txt"));
@@ -238,7 +267,8 @@ public class Check {
 						countMissing++;
 					}
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(frame, "Excel file not found, exiting", "AD Checker", JOptionPane.INFORMATION_MESSAGE);
 			System.out.println("Excel file not found");
 			System.out.println("\n******Ending AD Entry Check******");
 			System.exit(-1);
@@ -252,6 +282,7 @@ public class Check {
 		System.out.println("Error in Company: "+countCompany);
 		System.out.println("Error in Group: "+countGroup);
 		System.out.println("\n******Ending AD Entry Check******");
+		JOptionPane.showMessageDialog(frame, "Checking completed, check \"Check Result.txt\"", "AD Checker", JOptionPane.INFORMATION_MESSAGE);
 		System.exit(0);
 	}
 }
