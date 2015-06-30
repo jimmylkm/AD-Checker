@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -61,6 +62,19 @@ public class Check {
 	    	JOptionPane.showMessageDialog(frame, "Error while choosing file, exiting", "AD Checker", JOptionPane.INFORMATION_MESSAGE);
 	    	System.exit(-1);
 	    }
+	    
+	    JList<String> list = new JList<String>(new String[] {"Surname", "Given name", "Company", "Port", "Phone number", "Email", "User Group"});
+	    JOptionPane.showMessageDialog(
+	      frame, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
+	    int[] selectedList = list.getSelectedIndices();
+	    boolean[] selectedAttribute = new boolean[7];
+	    for(int i = 0; i < selectedList.length; i++){
+	    	selectedAttribute[selectedList[i]] = true;
+	    }
+	    for(boolean choice: selectedAttribute){
+	    	System.out.println(choice);
+	    }
+	    
 		
 //		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries",
 //				"AD Checker", JOptionPane.QUESTION_MESSAGE);
@@ -180,90 +194,92 @@ public class Check {
 					try{
 						List<String> adLines = Files.readAllLines(Paths.get(fullPathAD),
 								Charset.defaultCharset());
-
+						System.out.println("---------- " + ID + " (Row " + rowCount +") ----------");
 						for (String lineAD : adLines) {
 							lineAD = lineAD.trim();
-							if (Pattern.matches("(sn:).*",lineAD)){
+							if (selectedAttribute[0] && Pattern.matches("(sn:).*",lineAD)){
 								if(!entry.surname.equals(lineAD.substring(4).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : Surname is incorrect");
+									System.out.println("Surname is incorrect");
 									countSn++;
 								}
 								entry.surname = null;
 							}
-							if (Pattern.matches("(givenName:).*",lineAD)){
+							if (selectedAttribute[1] && Pattern.matches("(givenName:).*",lineAD)){
 								if(!entry.givenName.equals(lineAD.substring(11).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : GivenName is incorrect");
+									System.out.println("GivenName is incorrect");
 									countGivenName++;
 								}
 								entry.givenName = null;
 							}
-							if (Pattern.matches("(company:).*",lineAD)){
+							if (selectedAttribute[2] && Pattern.matches("(company:).*",lineAD)){
 								if(!entry.company.equals(lineAD.substring(9).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : Company is incorrect");
+									System.out.println("Company is incorrect");
 									countCompany++;
 								}
 								entry.company = null;
 
 							}
-							if (Pattern.matches("(cpatrueportcode:).*",lineAD)){
+							if (selectedAttribute[3] && Pattern.matches("(cpatrueportcode:).*",lineAD)){
 								if(!entry.port.equals(lineAD.substring(17).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : Port is incorrect");
+									System.out.println("Port is incorrect");
 									countPort++;
 								}
 								entry.port = null;
 
 							}
-							if (Pattern.matches("(mail:).*",lineAD)){
+							if (selectedAttribute[4] && Pattern.matches("(mail:).*",lineAD)){
 								if(!entry.email.equalsIgnoreCase(lineAD.substring(6).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : Email is incorrect");
+									System.out.println("Email is incorrect");
 									countEmail++;
 								}
 								entry.email = null;
 
 							}
-							if (Pattern.matches("(telephoneNumber:).*",lineAD)){
+							if (selectedAttribute[5] && Pattern.matches("(telephoneNumber:).*",lineAD)){
 								if(!entry.phone.equals(lineAD.substring(17).trim())){
-									System.out.println(ID + " (Row " + rowCount +") : Phone is incorrect");
+									System.out.println("Phone is incorrect");
 									countPhone++;
 								}
 								entry.phone = null;
 							}
-							if (Pattern.matches("(memberOf: CN=ISD).*",lineAD)){
+							if (selectedAttribute[6] && Pattern.matches("(memberOf: CN=ISD).*",lineAD)){
 								if(entry.group.contains(lineAD.substring(13).split(",",2)[0].trim())){
 									entry.group.remove(lineAD.substring(13).split(",",2)[0]);
 								}
 						}
 						}
-						if(!entry.group.isEmpty()){
-							System.out.println(ID + " (Row " + rowCount +") : Group attribute incorrect");
+						if(selectedAttribute[6] && !entry.group.isEmpty()){
+							System.out.println("Group attribute incorrect");
 							countGroup++;
 						}
-						if(entry.surname != null){
-							System.out.println(ID + " (Row " + rowCount +") : Surname is missing");
+						if(selectedAttribute[0] && entry.surname != null){
+							System.out.println("Surname is missing");
 							countSn++;
 						}
-						if(entry.givenName != null){
-							System.out.println(ID + " (Row " + rowCount +") : GivenName is missing");
+						if(selectedAttribute[1] && entry.givenName != null){
+							System.out.println("GivenName is missing");
 							countGivenName++;
 						}
-						if(entry.company != null){
-							System.out.println(ID + " (Row " + rowCount +") : Company is missing");
+						if(selectedAttribute[2] && entry.company != null){
+							System.out.println("Company is missing");
 							countCompany++;
 						}
-						if(entry.port != null){
-							System.out.println(ID + " (Row " + rowCount +") : Port is missing");
+						if(selectedAttribute[3] && entry.port != null){
+							System.out.println("Port is missing");
 							countPort++;
 						}
-						if(entry.email != null){
-							System.out.println(ID + " (Row " + rowCount +") : Email is missing");
+						if(selectedAttribute[4] && entry.email != null){
+							System.out.println("Email is missing");
 							countEmail++;
 						}
-						if(entry.phone != null){
-							System.out.println(ID + " (Row " + rowCount +") : Phone is missing");
+						if(selectedAttribute[5] && entry.phone != null){
+							System.out.println("Phone is missing");
 							countPhone++;
 						}
+						
 						}catch (IOException e1){
-						System.out.println(ID + " (Row " + rowCount +") : AD file not found");
+						System.out.println("---------- " + ID + " (Row " + rowCount +") ----------");
+						System.out.println("AD file not found");
 						countMissing++;
 					}
 			}
@@ -273,6 +289,7 @@ public class Check {
 			System.out.println("\n******Ending AD Entry Check******");
 			System.exit(-1);
 		}
+		System.out.println("\n--------AD Check Summary--------");
 		System.out.println("\nMissing File: "+countMissing);
 		System.out.println("Error in Surname: "+countSn);
 		System.out.println("Error in GivenName: "+countGivenName);
