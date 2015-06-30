@@ -51,6 +51,7 @@ public class Check {
 
 		JOptionPane.showMessageDialog(frame, "Show the AD file's directory", "AD Check", JOptionPane.INFORMATION_MESSAGE);
 		
+		chooser.setFileFilter(null);
 	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 	    returnVal = chooser.showOpenDialog(frame);
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
