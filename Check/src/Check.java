@@ -21,7 +21,6 @@ public class Check {
 		String adFileExt = ".out";
 		String fullPathAD = null;
 		String fullPathExcel = null;
-		String excelName = null;
 		String adFilePath = "";
 		
 		int countSn = 0;
@@ -38,53 +37,35 @@ public class Check {
 		FileNameExtensionFilter filter = new FileNameExtensionFilter(
 		        "csv", "csv");
 		
-		JOptionPane.showMessageDialog(frame, "Select the excel file", "AD Check", JOptionPane.INFORMATION_MESSAGE);
+//		JOptionPane.showMessageDialog(frame, "Select the excel file", "AD Check", JOptionPane.INFORMATION_MESSAGE);
 		
 	    JFileChooser chooser = new JFileChooser(System.getProperty("user.dir"));
 	    chooser.setFileFilter(filter);
+	    chooser.setDialogTitle("Choose the excel file");
 	    int returnVal = chooser.showOpenDialog(frame);
-	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	    	excelName = chooser.getSelectedFile().getName();
-	    	fullPathExcel = folderPath + excelName;
+	    if(returnVal == JFileChooser.APPROVE_OPTION){
+	    	fullPathExcel = chooser.getSelectedFile().getAbsolutePath().replace('\\', '/');
 	    }
 	    
 
-		JOptionPane.showMessageDialog(frame, "Show the AD file's directory", "AD Check", JOptionPane.INFORMATION_MESSAGE);
+//		JOptionPane.showMessageDialog(frame, "Show the AD file's directory", "AD Check", JOptionPane.INFORMATION_MESSAGE);
 		
 		chooser.setFileFilter(null);
 	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+	    chooser.setDialogTitle("Choose the AD file directory");
 	    returnVal = chooser.showOpenDialog(frame);
 	    if(returnVal == JFileChooser.APPROVE_OPTION) {
-	    	adFilePath = chooser.getSelectedFile().getName();
-	    	adFilePath = adFilePath + "/";
-	    }
-	    
-	    if(excelName == null || adFilePath == null){
-	    	JOptionPane.showMessageDialog(frame, "Error while choosing file, exiting", "AD Checker", JOptionPane.INFORMATION_MESSAGE);
-	    	System.exit(-1);
+			adFilePath = chooser.getSelectedFile().getAbsolutePath().replace('\\','/') + "/";
 	    }
 	    
 	    JList<String> list = new JList<String>(new String[] {"Surname", "Given name", "Company", "Port", "Phone number", "Email", "User Group"});
 	    JOptionPane.showMessageDialog(
-	      frame, list, "Multi-Select Example", JOptionPane.PLAIN_MESSAGE);
+	      frame, list, "Select the attribute to be comapared", JOptionPane.PLAIN_MESSAGE);
 	    int[] selectedList = list.getSelectedIndices();
 	    boolean[] selectedAttribute = new boolean[7];
 	    for(int i = 0; i < selectedList.length; i++){
 	    	selectedAttribute[selectedList[i]] = true;
 	    }
-	    for(boolean choice: selectedAttribute){
-	    	System.out.println(choice);
-	    }
-	    
-		
-//		excelName = JOptionPane.showInputDialog(frame,"Enter filename for Excel Entries",
-//				"AD Checker", JOptionPane.QUESTION_MESSAGE);
-//		fullPathExcel = folderPath + excelName.trim() + entryFileExt;
-//		
-//		adFilePath = JOptionPane.showInputDialog(frame,"Enter child filename containing AD files (Press Enter if AD files are in the same directory)",
-//				"AD Checker", JOptionPane.QUESTION_MESSAGE).trim();
-//		if(!adFilePath.equals(""))
-//			adFilePath = adFilePath + "/";
 		
 		try { 
 			PrintStream out = new PrintStream(new FileOutputStream("Check Result.txt"));
@@ -150,16 +131,16 @@ public class Check {
 			if(surname == -1 || givenName == -1 || company == -1 || port == -1 ||
 					countryCode == -1 || areaCode == -1 || phone == -1 || email == -1 || group == -1 || galaxyID == -1){
 				System.out.println("One of the required attribute not found in excel file!");
-				System.out.println(surname);
-				System.out.println(givenName);
-				System.out.println(company);
-				System.out.println(port);
-				System.out.println(countryCode);
-				System.out.println(areaCode);
-				System.out.println(phone);
-				System.out.println(email);
-				System.out.println(group);
-				System.out.println(galaxyID);
+//				System.out.println(surname);
+//				System.out.println(givenName);
+//				System.out.println(company);
+//				System.out.println(port);
+//				System.out.println(countryCode);
+//				System.out.println(areaCode);
+//				System.out.println(phone);
+//				System.out.println(email);
+//				System.out.println(group);
+//				System.out.println(galaxyID);
 				System.exit(-1);
 			}
 			excelListLines.remove(0);
